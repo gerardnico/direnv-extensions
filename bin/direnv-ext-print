@@ -80,7 +80,7 @@ vault_get() {
 
 # Assign the first argument to the ENV_FILE_PATTERN variable
 ENV_FILE_PATTERN="${1:-.env.*}"
-ENV_FILES=$(find . -maxdepth 1 -type f -name $ENV_FILE_PATTERN 2> /dev/null)
+ENV_FILES=$(find . -maxdepth 1 -type f -name "$ENV_FILE_PATTERN" 2> /dev/null)
 ENV_FILE_BASE='.env'
 if [ -f "$ENV_FILE_BASE" ]; then
   ENV_FILES="$ENV_FILE_BASE $ENV_FILES"
