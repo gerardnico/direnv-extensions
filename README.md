@@ -76,6 +76,8 @@ docker run \
 * Install `direnv-ext` with [homebrew](https://brew.sh/)
 ```bash
 brew install --HEAD gerardnico/tap/direnvext
+# Add the libraries directory into your path in your `.bashrc` file
+export PATH=$(brew --prefix bashlib)/lib:$PATH
 ```
 
 ### Configuration
