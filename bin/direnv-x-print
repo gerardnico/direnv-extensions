@@ -1,19 +1,16 @@
 #!/bin/bash
-# This script will take all env file (.env and .env.*)
-# * print it in a export format
-# * retrieve value from a vault if the value has the form: vault:$ENGINE/path/to/secret/field
-# * export the keys in the DIRENV_EXPORTED_KEYS variable
-#    Why? DIRENV_EXPORTED_ENVS may be used to recreate a list of env. For instance, for docker in the form `-e KEY=VALUE`
 
 
-######################
-# Standard Library and conf
-######################
-# The log and error handling
-# We still need to use the set command
-# because shellcheck does not see them and want use to add
-# exit check everywhere
+
 set -Eeuo pipefail
+# shellcheck source=../..//bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
+source bashlib-error.sh
+error::set_trap
+# shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-doc.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-doc.sh"
 
 # Function to trim leading and trailing whitespace
 trim() {
@@ -53,7 +50,7 @@ vault_get() {
 
   # Make a Vault call to get the actual value using the extracted MOUNT
   if ! SECRET_KV_JSON=$(vault kv get -format=json "$SECRET_PATH"); then
-    echo "Error: Failed to retrieve secret from Vault for mount: $MOUNT, path: $SECRET_PATH" >&2
+    echo::err "Error: Failed to retrieve secret from Vault for mount: $MOUNT, path: $SECRET_PATH"
     exit 1
   fi
 
@@ -77,6 +74,10 @@ vault_get() {
 
 }
 
+if [ "${1:-}" == "synopsis" ]; then
+  # No synopsis
+  exit
+fi
 
 # Assign the first argument to the ENV_FILE_PATTERN variable
 ENV_FILE_PATTERN="${1:-.env.*}"
@@ -87,8 +88,8 @@ if [ -f "$ENV_FILE_BASE" ]; then
 fi
 
 if [ "$ENV_FILES" == "" ]; then
-  echo_err "$ENV_FILES"
-  exit;
+  echo::err "$ENV_FILES"
+  exit 1;
 fi
 
 
@@ -123,9 +124,9 @@ for ENV_FILE in $ENV_FILES; do
 
               # Get the value from the vault
               if ! VALUE=$(vault_get "$SECRET_FIELD_PATH"); then
-                echo_err "Value not found for $SECRET_FIELD_PATH"
+                echo::err "Value not found for $SECRET_FIELD_PATH"
                 if [[ $VALUE != "" ]]; then
-                  echo_err "Error: $VALUE"
+                  echo::err "Error: $VALUE"
                 fi
                 exit 1;
               fi
@@ -147,7 +148,7 @@ for ENV_FILE in $ENV_FILES; do
 done
 
 if [ ${#OUTPUT_KEY_VALUES[@]} -eq 0 ]; then
-    echo_err "No env variables found in $ENV_FILES. Did you forget a new line at the end"
+    echo::err "No env variables found in $ENV_FILES. Did you forget a new line at the end"
     exit 1
 fi
 
