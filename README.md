@@ -12,7 +12,7 @@ The `direnv extensions script` is here to help.
 
 ## Example and Documentation
 
-See [the direnv-x-print documentation](build/docs/bin/direnv-x-print.md)
+See [the direnv-x-print documentation](docs/bin-generated/direnv-x-print.md)
 
 ## Install
 
