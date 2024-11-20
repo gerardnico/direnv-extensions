@@ -39,7 +39,13 @@ This script will take all env file (`.env` and `.env.*`)
     Why? `DIRENV_EXPORTED_ENVS` may be used to recreate a list of env. For instance, for docker in the form `-e KEY=VALUE`
 
 
-# Vault Value Syntax
+# FEATURES
+
+Support:
+* Windows file format (ie CRLF)
+* Vault
+
+# VAULT VALUE SYNTAX
 
 The vault syntax value is `vault:/path/to/secret/fieldName`
 
